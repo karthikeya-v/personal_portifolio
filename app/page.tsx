@@ -26,10 +26,14 @@ import {
 // Menu, X are for mobile nav.
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+
 import { ThemeToggleButton } from "@/components/theme-toggle-button"
 import { CodeSnippet } from "@/components/ui/code-snippet"
 import { GithubProjectsSection } from "@/components/server/github-projects-section";
 import { TechIcon } from "@/components/ui/tech-icon"; // Import the new TechIcon component
+=======
+import { ThemeToggle } from "@/components/theme-toggle"
+
 
 export default function Portfolio() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -101,6 +105,7 @@ export default function Portfolio() {
               <ThemeToggleButton />
             </div>
 
+
             {/* Mobile Menu Button */}
             <motion.custom
               variant="ghost"
@@ -115,6 +120,20 @@ export default function Portfolio() {
             >
               {isMenuOpen ? <X /> : <Menu />}
             </motion.custom>
+
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              {/* Mobile Menu Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden text-black hover:bg-gray-100"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                {isMenuOpen ? <X /> : <Menu />}
+              </Button>
+            </div>
+
           </div>
         </nav>
 
@@ -139,9 +158,13 @@ export default function Portfolio() {
                   {item}
                 </motion.button>
               ))}
+
               <div className="pt-2 px-3">
                 <ThemeToggleButton />
               </div>
+
+              <ThemeToggle />
+
             </div>
           </motion.div>
         )}
