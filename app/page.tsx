@@ -14,21 +14,38 @@ import {
   ExternalLink,
   Code,
   Server,
-  Shield,
+  Shield, // May be unused if not for project cards
   Cloud,
   GraduationCap,
-  Database,
+  Database, // May be unused if not for project cards
   ChevronDown,
 } from "lucide-react"
+// Github, ExternalLink are used by GithubProjectsSection and Footer, so keep.
+// Code, Server are used in Skills.
+// Mail, Phone, MapPin, Download, Linkedin are used in Contact and Footer.
+// Menu, X are for mobile nav.
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+
+import { ThemeToggleButton } from "@/components/theme-toggle-button"
+import { CodeSnippet } from "@/components/ui/code-snippet"
+import { GithubProjectsSection } from "@/components/server/github-projects-section";
+import { TechIcon } from "@/components/ui/tech-icon"; // Import the new TechIcon component
+=======
 import { ThemeToggle } from "@/components/theme-toggle"
 
+
 export default function Portfolio() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const { scrollYProgress } = useScroll()
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { scrollYProgress } = useScroll();
   const headerOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0.95])
   const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"])
+
+  // Standardized transitions
+  const slowTransition = { duration: 0.8, ease: "easeInOut" };
+  const mediumTransition = { duration: 0.6, ease: "easeInOut" };
+  const fastTransition = { duration: 0.3, ease: "easeOut" };
+  const buttonHoverTapTransition = { duration: 0.2, ease: "easeOut" };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -48,68 +65,61 @@ export default function Portfolio() {
     setIsMenuOpen(false)
   }
 
-  // Tech logos as simple icon representations
-  const TechLogos = {
-    Python: () => (
-      <div className="w-8 h-8 bg-black text-white flex items-center justify-center text-xs font-bold">PY</div>
-    ),
-    Java: () => (
-      <div className="w-8 h-8 bg-black text-white flex items-center justify-center text-xs font-bold">JV</div>
-    ),
-    JavaScript: () => (
-      <div className="w-8 h-8 bg-black text-white flex items-center justify-center text-xs font-bold">JS</div>
-    ),
-    CPlusPlus: () => (
-      <div className="w-8 h-8 bg-black text-white flex items-center justify-center text-xs font-bold">C++</div>
-    ),
-    SQL: () => (
-      <div className="w-8 h-8 bg-black text-white flex items-center justify-center text-xs font-bold">SQL</div>
-    ),
-    NodeJS: () => (
-      <div className="w-8 h-8 bg-black text-white flex items-center justify-center text-xs font-bold">NODE</div>
-    ),
-    Docker: () => (
-      <div className="w-8 h-8 bg-black text-white flex items-center justify-center text-xs font-bold">DOC</div>
-    ),
-    AWS: () => (
-      <div className="w-8 h-8 bg-black text-white flex items-center justify-center text-xs font-bold">AWS</div>
-    ),
-    Git: () => (
-      <div className="w-8 h-8 bg-black text-white flex items-center justify-center text-xs font-bold">GIT</div>
-    ),
-    Linux: () => (
-      <div className="w-8 h-8 bg-black text-white flex items-center justify-center text-xs font-bold">LNX</div>
-    ),
-  }
+  // TechLogos object is removed. TechIcon component will be used directly.
 
   return (
-    <div className="min-h-screen bg-white text-black">
+    <main className="min-h-screen bg-background text-foreground">
       {/* Enhanced Header */}
       <motion.header
-        className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-200"
+        className="fixed top-0 w-full z-50 bg-background/95 backdrop-blur-md border-b border-border"
         style={{ opacity: headerOpacity }}
+        transition={fastTransition}
       >
         <nav className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <motion.div className="flex items-center gap-3" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <div className="w-10 h-10 bg-black text-white flex items-center justify-center font-bold text-lg">KV</div>
-              <span className="text-black font-bold text-xl">Karthikeya V.</span>
+            <motion.div
+              className="flex items-center gap-3"
+              whileHover={{ scale: 1.05, transition: buttonHoverTapTransition }}
+              whileTap={{ scale: 0.95, transition: buttonHoverTapTransition }}
+            >
+              <div className="w-10 h-10 bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg">
+                KV
+              </div>
+              <span className="text-foreground font-bold font-heading text-xl">Karthikeya V.</span>
             </motion.div>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-8">
+            <div className="hidden md:flex items-center gap-6 lg:gap-8">
               {["About", "Skills", "Education", "Projects", "Contact"].map((item) => (
                 <motion.button
                   key={item}
                   onClick={() => scrollToSection(item.toLowerCase())}
-                  className="text-black hover:text-gray-600 transition-colors relative group font-medium"
-                  whileHover={{ y: -2 }}
+                  className="text-foreground hover:text-primary transition-colors relative group font-medium text-sm lg:text-base"
+                  whileHover={{ y: -2, transition: buttonHoverTapTransition }}
+                  transition={fastTransition}
                 >
                   {item}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black transition-all group-hover:w-full" />
+                  <span className="absolute -bottom-0.5 left-0 w-0 h-[1.5px] bg-primary transition-all duration-300 ease-out group-hover:w-full" />
                 </motion.button>
               ))}
+              <ThemeToggleButton />
             </div>
+
+
+            {/* Mobile Menu Button */}
+            <motion.custom
+              variant="ghost"
+              size="icon"
+              className="md:hidden text-foreground hover:bg-muted"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              whileTap={{ scale: 0.9, transition: buttonHoverTapTransition }}
+              as={Button}
+              aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-menu-content"
+            >
+              {isMenuOpen ? <X /> : <Menu />}
+            </motion.custom>
 
             <div className="flex items-center gap-2">
               <ThemeToggle />
@@ -123,134 +133,152 @@ export default function Portfolio() {
                 {isMenuOpen ? <X /> : <Menu />}
               </Button>
             </div>
+
           </div>
         </nav>
 
         {/* Mobile Menu */}
         {isMenuOpen && (
           <motion.div
+            id="mobile-menu-content" // Added ID for aria-controls
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="md:hidden bg-white border-t border-gray-200"
+            transition={{ ...fastTransition, duration: 0.2 }}
+            className="md:hidden bg-background border-t border-border shadow-lg"
           >
-            <div className="container mx-auto px-4 py-6 space-y-4">
+            <nav className="container mx-auto px-4 py-6 space-y-1" aria-label="Mobile navigation">
               {["About", "Skills", "Education", "Projects", "Contact"].map((item) => (
-                <button
+                <motion.button
                   key={item}
                   onClick={() => scrollToSection(item.toLowerCase())}
-                  className="block w-full text-left text-black hover:text-gray-600 transition-colors py-2 font-medium"
+                  className="block w-full text-left text-foreground hover:bg-muted/80 dark:hover:bg-muted/50 transition-colors py-3 px-3 rounded-md font-medium"
+                  whileTap={{ scale: 0.98, transition: buttonHoverTapTransition }}
                 >
                   {item}
-                </button>
+                </motion.button>
               ))}
+
+              <div className="pt-2 px-3">
+                <ThemeToggleButton />
+              </div>
+
               <ThemeToggle />
+
             </div>
           </motion.div>
         )}
       </motion.header>
 
       {/* Enhanced Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-black text-white overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black" />
+      <section className="relative min-h-screen flex items-center justify-center bg-background text-foreground overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-muted to-background dark:from-black dark:via-gray-900 dark:to-black" />
 
         {/* Geometric patterns */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-32 h-32 border border-white transform rotate-45" />
-          <div className="absolute bottom-20 right-20 w-24 h-24 border border-white" />
-          <div className="absolute top-1/2 left-10 w-16 h-16 border border-white transform rotate-12" />
+          <div className="absolute top-20 left-20 w-32 h-32 border border-foreground transform rotate-45" />
+          <div className="absolute bottom-20 right-20 w-24 h-24 border border-foreground" />
+          <div className="absolute top-1/2 left-10 w-16 h-16 border border-foreground transform rotate-12" />
         </div>
 
         <motion.div className="container mx-auto px-4 text-center relative z-10" style={{ y: heroY }}>
           <motion.h1
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-5xl md:text-7xl font-bold mb-6 text-white"
+            transition={mediumTransition}
+            className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-foreground"
           >
             Sai Karthikeya Vemulapalli
           </motion.h1>
 
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
+            initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="text-xl md:text-2xl mb-4 text-gray-300"
+            transition={{ ...mediumTransition, delay: 0.2 }}
+            className="text-lg sm:text-xl md:text-2xl mb-6 text-muted-foreground max-w-xl lg:max-w-2xl mx-auto leading-relaxed"
           >
             Software Engineering Student | DevSecOps Enthusiast | Backend Developer
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="flex items-center justify-center gap-2 text-lg mb-8 text-gray-400"
+            transition={{ ...mediumTransition, delay: 0.4 }}
+            className="flex items-center justify-center gap-2 text-base sm:text-lg mb-10 text-muted-foreground"
           >
             <MapPin className="w-5 h-5" />
             Brisbane, QLD, Australia
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.7 }}
+            transition={{ ...mediumTransition, delay: 0.6 }}
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
-            <Button
+            <motion.custom
               onClick={() => scrollToSection("contact")}
-              className="bg-white text-black hover:bg-gray-200 px-8 py-3 text-lg font-semibold transition-all hover:scale-105"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md px-6 sm:px-8 py-3 text-base sm:text-lg font-medium"
+              whileHover={{ scale: 1.03, y: -2, transition: buttonHoverTapTransition }}
+              whileTap={{ scale: 0.97, y: 0, transition: buttonHoverTapTransition }}
+              transition={fastTransition}
+              as={Button}
             >
               <Mail className="w-5 h-5 mr-2" />
               Get In Touch
-            </Button>
-            <Button
+            </motion.custom>
+            <motion.custom
               onClick={() => scrollToSection("projects")}
               variant="outline"
-              className="border-white text-white hover:bg-white hover:text-black px-8 py-3 text-lg font-semibold transition-all hover:scale-105"
+              className="border-border text-foreground hover:bg-muted hover:text-muted-foreground shadow-sm hover:shadow-md px-6 sm:px-8 py-3 text-base sm:text-lg font-medium"
+              whileHover={{ scale: 1.03, y: -2, transition: buttonHoverTapTransition }}
+              whileTap={{ scale: 0.97, y: 0, transition: buttonHoverTapTransition }}
+              transition={fastTransition}
+              as={Button}
             >
               <Code className="w-5 h-5 mr-2" />
               View Projects
-            </Button>
+            </motion.custom>
           </motion.div>
         </motion.div>
 
         <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white"
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-foreground"
         >
           <ChevronDown className="w-8 h-8" />
         </motion.div>
       </section>
 
       {/* Enhanced About Section */}
-      <section id="about" className="py-20 bg-white">
+      <section id="about" className="py-16 md:py-20 lg:py-24 bg-background">
         <div className="container mx-auto px-4">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={mediumTransition}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-12 md:mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-black">About Me</h2>
-            <div className="w-24 h-1 bg-black mx-auto" />
+            <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-foreground">About Me</h2>
+            <div className="w-20 h-1 bg-primary mx-auto"></div>
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ ...mediumTransition, delay: 0.2 }}
             viewport={{ once: true }}
-            className="max-w-4xl mx-auto"
+            className="max-w-2xl lg:max-w-3xl mx-auto"
           >
-            <Card className="p-8 border-2 border-black bg-white">
-              <CardContent className="space-y-6 text-lg leading-relaxed text-gray-700">
+            <Card className="p-6 sm:p-8 border-2 border-border bg-card text-card-foreground">
+              <CardContent className="space-y-5 text-base sm:text-lg leading-relaxed sm:leading-loose text-muted-foreground">
                 <p>
-                  I'm a passionate <strong className="text-black">Software Engineering student</strong> at The
-                  University of Queensland with a keen interest in <strong className="text-black">DevSecOps</strong>,{" "}
-                  <strong className="text-black">cybersecurity</strong>, and{" "}
-                  <strong className="text-black">backend development</strong>.
+                  I'm a passionate <strong className="text-foreground font-medium">Software Engineering student</strong> at The
+                  University of Queensland with a keen interest in <strong className="text-foreground font-medium">DevSecOps</strong>,{" "}
+                  <strong className="text-foreground font-medium">cybersecurity</strong>, and{" "}
+                  <strong className="text-foreground font-medium">backend development</strong>.
                 </p>
                 <p>
                   Currently seeking opportunities to apply my technical skills in real-world settings, I'm particularly
@@ -269,90 +297,78 @@ export default function Portfolio() {
       </section>
 
       {/* Enhanced Skills Section */}
-      <section id="skills" className="py-20 bg-gray-50">
+      <section id="skills" className="py-16 md:py-20 lg:py-24 bg-muted/50 dark:bg-muted/20">
         <div className="container mx-auto px-4">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={mediumTransition}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-12 md:mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-black">Technical Skills</h2>
-            <div className="w-24 h-1 bg-black mx-auto" />
+            <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-foreground">Technical Skills</h2>
+            <div className="w-20 h-1 bg-primary mx-auto"></div>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {[
               {
                 icon: <Code className="w-8 h-8" />,
                 title: "Programming Languages",
                 description:
                   "Proficient in multiple programming languages with focus on backend development and system programming.",
-                skills: ["Python", "Java", "JavaScript", "C/C++", "SQL"],
-                logos: [TechLogos.Python, TechLogos.Java, TechLogos.JavaScript, TechLogos.CPlusPlus, TechLogos.SQL],
+                skills: ["Python", "Java", "JavaScript", "CPlusPlus", "CSharp", "SQL", "Go", "PHP", "Ruby"], // Matched to TechIcon keys
               },
               {
-                icon: <Server className="w-8 h-8" />,
+                icon: <Server className="w-8 h-8" />, // This Server icon is for the category title
                 title: "Backend Development",
                 description:
                   "Experience building RESTful APIs, database management, and server-side application development.",
-                skills: ["Node.js", "Express.js", "MySQL", "MongoDB", "REST APIs"],
-                logos: [TechLogos.NodeJS, TechLogos.SQL, TechLogos.NodeJS, TechLogos.SQL, TechLogos.NodeJS],
+                skills: ["NodeJS", "ExpressJS", "Django", "SpringBoot", "RESTAPIs", "MySQL", "PostgreSQL", "MongoDB"],
               },
               {
-                icon: <Shield className="w-8 h-8" />,
+                icon: <Shield className="w-8 h-8" />, // This Shield icon is for the category title
                 title: "DevSecOps & Security",
                 description:
                   "Learning security-first development practices and exploring cybersecurity tools and methodologies.",
-                skills: ["Docker", "Git/GitHub", "Linux", "Security Testing", "CI/CD"],
-                logos: [TechLogos.Docker, TechLogos.Git, TechLogos.Linux, TechLogos.Docker, TechLogos.Git],
+                skills: ["Docker", "Git", "GitHub", "Linux", "SecurityTesting", "CI/CD", "Kubernetes"],
               },
               {
-                icon: <Cloud className="w-8 h-8" />,
-                title: "Cloud & Tools",
+                icon: <Cloud className="w-8 h-8" />, // This Cloud icon is for the category title
+                title: "Frontend & Cloud Tools", // Combined some for better fit or can be split
                 description:
-                  "Familiar with cloud platforms and modern development tools for scalable application deployment.",
-                skills: ["AWS", "Azure", "Grafana", "Monitoring", "Kubernetes"],
-                logos: [TechLogos.AWS, TechLogos.AWS, TechLogos.Docker, TechLogos.Linux, TechLogos.Docker],
+                  "Familiar with modern frontend frameworks, cloud platforms, and development tools.",
+                skills: ["React", "NextJS", "TailwindCSS", "AWS", "Azure", "Grafana", "Monitoring"],
               },
             ].map((category, index) => (
               <motion.div
                 key={category.title}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
+                transition={{ ...mediumTransition, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                whileHover={{ y: -10, scale: 1.02 }}
+                whileHover={{ y: -5, scale: 1.01, transition: fastTransition }}
                 className="group"
               >
-                <Card className="h-full p-6 border-2 border-black bg-white hover:bg-gray-50 transition-all duration-300">
+                <Card className="h-full p-6 border-2 border-border bg-card hover:bg-muted/50 dark:hover:bg-muted/30 transition-all duration-300 group-hover:shadow-lg dark:group-hover:shadow-primary/20">
                   <CardContent className="space-y-4">
-                    <div className="w-16 h-16 bg-black text-white flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                      {category.icon}
-                    </div>
-                    <h3 className="text-xl font-bold text-black group-hover:text-gray-700 transition-colors">
+                    <motion.div
+                      className="w-14 h-14 sm:w-16 sm:h-16 bg-primary text-primary-foreground flex items-center justify-center mb-4 rounded-lg group-hover:scale-105 transition-transform duration-200"
+                    >
+                      {React.cloneElement(category.icon, { className: "w-7 h-7 sm:w-8 sm:h-8"})}
+                    </motion.div>
+                    <h3 className="font-heading text-xl sm:text-2xl font-semibold text-foreground group-hover:text-accent-foreground transition-colors">
                       {category.title}
                     </h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">{category.description}</p>
+                    <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed mb-4">{category.description}</p>
 
-                    {/* Tech logos */}
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {category.logos.map((Logo, logoIndex) => (
-                        <Logo key={logoIndex} />
-                      ))}
-                    </div>
-
-                    <div className="flex flex-wrap gap-2">
+                    {/* New TechIcon rendering */}
+                    <div className="flex flex-wrap gap-3 items-center">
                       {category.skills.map((skill) => (
-                        <span
-                          key={skill}
-                          className="px-3 py-1 text-xs font-medium text-white bg-black hover:bg-gray-800 transition-colors cursor-default"
-                        >
-                          {skill}
-                        </span>
+                        <TechIcon key={skill} techName={skill} />
                       ))}
                     </div>
+                    {/* Old skill text badges are removed in favor of tooltips from TechIcon */}
                   </CardContent>
                 </Card>
               </motion.div>
@@ -362,40 +378,43 @@ export default function Portfolio() {
       </section>
 
       {/* Enhanced Education Section */}
-      <section id="education" className="py-20 bg-white">
+      <section id="education" className="py-16 md:py-20 lg:py-24 bg-background">
         <div className="container mx-auto px-4">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={mediumTransition}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-12 md:mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-black">Education & Learning</h2>
-            <div className="w-24 h-1 bg-black mx-auto" />
+            <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-foreground">Education & Learning</h2>
+            <div className="w-20 h-1 bg-primary mx-auto"></div>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto">
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
+              initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
+              transition={mediumTransition}
               viewport={{ once: true }}
-              whileHover={{ y: -5, scale: 1.02 }}
+              whileHover={{ y: -5, scale: 1.01, transition: fastTransition }}
+              className="group"
             >
-              <Card className="h-full p-8 border-2 border-black bg-white">
+              <Card className="h-full p-6 sm:p-8 border-2 border-border bg-card text-card-foreground group-hover:shadow-lg dark:group-hover:shadow-primary/20">
                 <CardContent className="space-y-4">
-                  <div className="w-16 h-16 bg-black text-white flex items-center justify-center text-2xl font-bold mb-4">
+                  <motion.div
+                    className="w-14 h-14 sm:w-16 sm:h-16 bg-primary text-primary-foreground flex items-center justify-center text-2xl font-bold mb-4 rounded-lg group-hover:scale-105 transition-transform duration-200"
+                  >
                     UQ
+                  </motion.div>
+                  <div className="flex items-center gap-3 mb-3">
+                    <GraduationCap className="w-6 h-6 text-foreground" />
+                    <h3 className="font-heading text-xl sm:text-2xl font-semibold text-foreground">Current Education</h3>
                   </div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <GraduationCap className="w-6 h-6 text-black" />
-                    <h3 className="text-2xl font-bold text-black">Current Education</h3>
-                  </div>
-                  <h4 className="text-xl font-semibold text-black">Bachelor of Software Engineering</h4>
-                  <p className="text-lg font-medium text-gray-700">The University of Queensland – Brisbane, QLD</p>
-                  <p className="text-gray-600 italic">Expected Graduation: 2025</p>
-                  <p className="text-gray-700 leading-relaxed">
+                  <h4 className="font-heading text-lg sm:text-xl font-medium text-foreground">Bachelor of Software Engineering</h4>
+                  <p className="text-base sm:text-lg font-medium text-muted-foreground">The University of Queensland – Brisbane, QLD</p>
+                  <p className="text-sm sm:text-base text-muted-foreground italic">Expected Graduation: 2025</p>
+                  <p className="text-sm sm:text-base text-muted-foreground leading-relaxed sm:leading-loose">
                     Specializing in secure software development, cloud computing, and cybersecurity. Coursework includes
                     software design, database systems, web development, and information security.
                   </p>
@@ -404,22 +423,25 @@ export default function Portfolio() {
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, x: 30 }}
+              initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              transition={{ ...mediumTransition, delay: 0.2 }}
               viewport={{ once: true }}
-              whileHover={{ y: -5, scale: 1.02 }}
+              whileHover={{ y: -5, scale: 1.01, transition: fastTransition }}
+              className="group"
             >
-              <Card className="h-full p-8 border-2 border-black bg-white">
+              <Card className="h-full p-6 sm:p-8 border-2 border-border bg-card text-card-foreground group-hover:shadow-lg dark:group-hover:shadow-primary/20">
                 <CardContent className="space-y-4">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-16 h-16 bg-black text-white flex items-center justify-center">
-                      <GraduationCap className="w-8 h-8" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-black">Learning Goals</h3>
+                  <div className="flex items-center gap-3 mb-4 sm:mb-6">
+                    <motion.div
+                      className="w-14 h-14 sm:w-16 sm:h-16 bg-primary text-primary-foreground flex items-center justify-center rounded-lg group-hover:scale-105 transition-transform duration-200"
+                    >
+                      <GraduationCap className="w-7 h-7 sm:w-8 sm:h-8" />
+                    </motion.div>
+                    <h3 className="font-heading text-xl sm:text-2xl font-semibold text-foreground">Learning Goals</h3>
                   </div>
-                  <p className="text-lg font-semibold text-gray-700 mb-4">Currently pursuing:</p>
-                  <ul className="space-y-3">
+                  <p className="text-base sm:text-lg font-medium text-muted-foreground mb-3">Currently pursuing:</p>
+                  <ul className="space-y-2.5 sm:space-y-3 list-none pl-0"> {/* Ensured ul, list-none removes default bullets if custom are used */}
                     {[
                       "AWS Cloud Practitioner Certification",
                       "Docker & Kubernetes fundamentals",
@@ -429,13 +451,13 @@ export default function Portfolio() {
                     ].map((goal, index) => (
                       <motion.li
                         key={goal}
-                        initial={{ opacity: 0, x: 20 }}
+                        initial={{ opacity: 0, x: 30 }}
                         whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                        transition={{ duration: 0.4, ease: "easeOut", delay: index * 0.05 }}
                         viewport={{ once: true }}
-                        className="flex items-center gap-3 text-gray-700"
+                        className="flex items-center gap-2.5 sm:gap-3 text-sm sm:text-base text-muted-foreground"
                       >
-                        <div className="w-2 h-2 bg-black" />
+                        <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary rounded-full" aria-hidden="true"></span>
                         {goal}
                       </motion.li>
                     ))}
@@ -447,167 +469,72 @@ export default function Portfolio() {
         </div>
       </section>
 
-      {/* Enhanced Projects Section */}
-      <section id="projects" className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-black">Featured Projects</h2>
-            <div className="w-24 h-1 bg-black mx-auto" />
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            {[
-              {
-                icon: <Database className="w-6 h-6" />,
-                title: "MySQL + Grafana SaaS Monitoring",
-                description:
-                  "Docker containerized solution for deploying MySQL database with Grafana monitoring dashboard, loaded with 55,000+ SaaS application data for comprehensive analytics and visualization.",
-                tech: ["Docker", "MySQL", "Grafana", "Python"],
-              },
-              {
-                icon: <Shield className="w-6 h-6" />,
-                title: "ReconMap Testing Repository",
-                description:
-                  "Personal testing environment for security reconnaissance and vulnerability assessment tools. Exploring penetration testing methodologies and security automation.",
-                tech: ["Security Testing", "Smarty", "Reconnaissance", "DevSecOps"],
-              },
-              {
-                icon: <GraduationCap className="w-6 h-6" />,
-                title: "University Course Projects",
-                description:
-                  "Collection of academic projects including web applications, database systems, and software engineering assignments demonstrating full-stack development skills.",
-                tech: ["Full-Stack", "Database Design", "Web Development", "Software Engineering"],
-              },
-              {
-                icon: <Github className="w-6 h-6" />,
-                title: "Code Storage & Learning",
-                description:
-                  "GitHub repository serving as a personal code library and learning journal, documenting my journey through various programming languages and technologies.",
-                tech: ["Version Control", "Documentation", "Learning", "Best Practices"],
-              },
-            ].map((project, index) => (
-              <motion.div
-                key={project.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -10, scale: 1.02 }}
-                className="group"
-              >
-                <Card className="h-full p-6 border-2 border-black bg-white hover:bg-gray-50 transition-all duration-300">
-                  <CardContent className="space-y-4">
-                    <div className="w-12 h-12 bg-black text-white flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                      {project.icon}
-                    </div>
-                    <h3 className="text-xl font-bold text-black group-hover:text-gray-700 transition-colors">
-                      {project.title}
-                    </h3>
-                    <p className="text-gray-600 leading-relaxed">{project.description}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {project.tech.map((tech) => (
-                        <span
-                          key={tech}
-                          className="px-3 py-1 text-xs font-medium text-white bg-black hover:bg-gray-800 transition-colors cursor-default"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            viewport={{ once: true }}
-            className="text-center mt-12"
-          >
-            <Button
-              onClick={() => window.open("https://github.com/karthikeya-v", "_blank")}
-              className="bg-black text-white hover:bg-gray-800 px-8 py-3 text-lg font-semibold transition-all hover:scale-105"
-            >
-              <Github className="w-5 h-5 mr-2" />
-              View All Projects on GitHub
-              <ExternalLink className="w-4 h-4 ml-2" />
-            </Button>
-          </motion.div>
-        </div>
-      </section>
+      {/* Enhanced Projects Section - Now uses server component */}
+      <GithubProjectsSection />
 
       {/* Enhanced Contact Section */}
-      <section id="contact" className="py-20 bg-black text-white relative overflow-hidden">
+      <section id="contact" className="py-16 md:py-20 lg:py-24 bg-background text-foreground relative overflow-hidden">
         {/* Geometric patterns */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-32 h-32 border border-white transform rotate-45" />
-          <div className="absolute bottom-20 right-20 w-24 h-24 border border-white" />
-          <div className="absolute top-1/2 right-10 w-16 h-16 border border-white transform -rotate-12" />
+        <div className="absolute inset-0 opacity-10 dark:opacity-5">
+          <div className="absolute top-20 left-20 w-32 h-32 border border-foreground transform rotate-45" />
+          <div className="absolute bottom-20 right-20 w-24 h-24 border border-foreground" />
+          <div className="absolute top-1/2 right-10 w-16 h-16 border border-foreground transform -rotate-12" />
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={mediumTransition}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-12 md:mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white">Get In Touch</h2>
-            <div className="w-24 h-1 bg-white mx-auto mb-6" />
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+            <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-foreground">Get In Touch</h2>
+            <div className="w-20 h-1 bg-primary mx-auto mb-6"></div>
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-xl lg:max-w-2xl mx-auto leading-relaxed lg:leading-loose">
               Interested in collaborating or have an opportunity to share? I'd love to hear from you!
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
             {[
               {
-                icon: <Mail className="w-8 h-8" />,
+                icon: <Mail className="w-7 h-7 sm:w-8 sm:h-8" />,
                 title: "Email",
                 subtitle: "Send me an email",
                 description: "Drop me a line anytime! I usually respond within 24 hours.",
                 action: "mailto:saikarthikeya.vemulapalli@gmail.com",
               },
               {
-                icon: <Phone className="w-8 h-8" />,
+                icon: <Phone className="w-7 h-7 sm:w-8 sm:h-8" />,
                 title: "Phone",
                 subtitle: "Call or text me",
                 description: "Available for calls during business hours in Brisbane timezone.",
                 action: "tel:+61412259932",
               },
               {
-                icon: <Linkedin className="w-8 h-8" />,
+                icon: <Linkedin className="w-7 h-7 sm:w-8 sm:h-8" />,
                 title: "LinkedIn",
                 subtitle: "Connect professionally",
                 description: "Let's connect and build our professional network together!",
                 action: "https://www.linkedin.com/in/sai-karthikeya-vemulapalli-375a44252/",
               },
               {
-                icon: <Github className="w-8 h-8" />,
+                icon: <Github className="w-7 h-7 sm:w-8 sm:h-8" />,
                 title: "GitHub",
                 subtitle: "Check out my code",
                 description: "Explore my repositories and open-source contributions.",
                 action: "https://github.com/karthikeya-v",
               },
               {
-                icon: <MapPin className="w-8 h-8" />,
+                icon: <MapPin className="w-7 h-7 sm:w-8 sm:h-8" />,
                 title: "Location",
                 subtitle: "Based in Australia",
                 description: "Brisbane, Queensland, Australia - Open to remote work opportunities.",
                 action: null,
               },
               {
-                icon: <Download className="w-8 h-8" />,
+                icon: <Download className="w-7 h-7 sm:w-8 sm:h-8" />,
                 title: "Resume",
                 subtitle: "Download my resume",
                 description: "Get a detailed overview of my experience and qualifications.",
@@ -616,41 +543,50 @@ export default function Portfolio() {
             ].map((contact, index) => (
               <motion.div
                 key={contact.title}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
+                transition={{ ...mediumTransition, delay: index * 0.05 }}
                 viewport={{ once: true }}
-                whileHover={{ y: -10, scale: 1.05 }}
+                whileHover={{ y: -5, scale: 1.02, transition: fastTransition }}
                 className="group relative"
               >
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-white text-black px-4 py-1 text-sm font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap">
+                <motion.div
+                  className="absolute -top-3.5 left-1/2 transform -translate-x-1/2 bg-card text-card-foreground px-3 py-0.5 text-xs font-medium opacity-0 group-hover:opacity-100 group-hover:-translate-y-1 transition-all duration-200 ease-out whitespace-nowrap rounded-sm shadow-sm"
+                >
                   {contact.subtitle}
                 </div>
 
-                <Card className="h-full p-6 bg-white/10 backdrop-blur-md border-2 border-white/20 hover:bg-white/20 transition-all duration-300">
-                  <CardContent className="text-center space-y-4">
-                    <div className="w-16 h-16 mx-auto bg-white text-black flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <Card className="h-full p-6 sm:p-8 bg-card/80 dark:bg-card/50 backdrop-blur-md border-2 border-border hover:bg-muted/50 dark:hover:bg-muted/30 transition-all duration-300 group-hover:shadow-xl dark:group-hover:shadow-primary/25">
+                  <CardContent className="text-center space-y-3 sm:space-y-4">
+                    <motion.div
+                      className="w-14 h-14 sm:w-16 sm:h-16 mx-auto bg-primary text-primary-foreground flex items-center justify-center rounded-lg group-hover:scale-105 transition-transform duration-200"
+                    >
                       {contact.icon}
-                    </div>
-                    <h3 className="text-xl font-bold text-white group-hover:text-gray-200 transition-colors">
+                    </motion.div>
+                    <h3 className="font-heading text-xl sm:text-2xl font-semibold text-foreground group-hover:text-accent-foreground transition-colors">
                       {contact.title}
                     </h3>
-                    <p className="text-gray-300 text-sm leading-relaxed">{contact.description}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed sm:leading-loose">{contact.description}</p>
                     {contact.action && (
-                      <Button
+                      <motion.custom
                         onClick={() => {
-                          if (contact.action.startsWith("http")) {
-                            window.open(contact.action, "_blank")
-                          } else {
-                            window.location.href = contact.action
+                          if (contact.action.startsWith("http") || contact.action.startsWith("mailto") || contact.action.startsWith("tel")) {
+                            window.open(contact.action, contact.action.startsWith("http") ? "_blank" : "_self")
+                          } else if (contact.action === "#") {
+                            // Placeholder for resume download or other action
+                            console.log("Resume download clicked");
                           }
                         }}
                         variant="outline"
-                        className="border-white/30 text-white hover:bg-white hover:text-black transition-all"
+                        className="border-border text-foreground hover:bg-muted hover:text-muted-foreground shadow-sm hover:shadow-md text-xs sm:text-sm px-4 py-2"
+                        whileHover={{ scale: 1.03, y:-1, transition: buttonHoverTapTransition }}
+                        whileTap={{ scale: 0.97, y:0, transition: buttonHoverTapTransition }}
+                        transition={fastTransition}
+                        as={Button}
                       >
                         Connect
-                        <ExternalLink className="w-4 h-4 ml-2" />
-                      </Button>
+                        <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-1.5 sm:ml-2" />
+                      </motion.custom>
                     )}
                   </CardContent>
                 </Card>
@@ -660,46 +596,147 @@ export default function Portfolio() {
         </div>
       </section>
 
+      {/* Temporary Test Section for CodeSnippet */}
+      <section id="dev-perks-test" className="py-16 md:py-20 lg:py-24 bg-background">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={mediumTransition}
+            viewport={{ once: true }}
+            className="text-center mb-12 md:mb-16"
+          >
+            {/* This h2 is part of a temporary section, its level might need adjustment in a real page structure */}
+            <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-foreground">
+              Interactive Code Snippets
+            </h2>
+            <div className="w-20 h-1 bg-primary mx-auto"></div>
+          </motion.div>
+          <div className="max-w-2xl lg:max-w-3xl mx-auto space-y-8">
+            <CodeSnippet
+              language="javascript"
+              title="Example JavaScript: greet.js"
+              codeString={`function greet(name) {
+  // A simple greeting function
+  console.log(\`Hello, \${name}!\`);
+}
+
+greet("Developer");
+// Expected output: Hello, Developer!`}
+            />
+            <CodeSnippet
+              language="python"
+              title="Example Python: calculate_sum.py"
+              codeString={`def calculate_sum(a, b):
+  """Calculates the sum of two numbers."""
+  return a + b
+
+result = calculate_sum(5, 10)
+print(f"The sum is: {result}")
+# Expected output: The sum is: 15`}
+            />
+             <CodeSnippet
+              language="tsx"
+              title="React Component: MyButton.tsx"
+              codeString={`import React from 'react';
+
+type MyButtonProps = {
+  onClick: () => void;
+  children: React.ReactNode;
+};
+
+const MyButton: React.FC<MyButtonProps> = ({ onClick, children }) => {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        padding: '10px 15px',
+        backgroundColor: 'blue',
+        color: 'white',
+        border: 'none',
+        borderRadius: '5px'
+      }}
+    >
+      {children}
+    </button>
+  );
+};
+
+export default MyButton;`}
+            />
+            <CodeSnippet
+              language="bash"
+              title="Bash Script: setup_project.sh"
+              codeString={`#!/bin/bash
+
+# Create project directory
+mkdir my_new_project
+cd my_new_project
+
+# Initialize git repository
+git init
+
+# Create a virtual environment (Python)
+python3 -m venv .venv
+source .venv/bin/activate
+
+echo "Project setup complete!"`}
+            />
+          </div>
+        </div>
+      </section>
+
       {/* Enhanced Footer */}
-      <footer className="bg-white text-black py-8 border-t-2 border-black">
+      <footer className="bg-muted/50 dark:bg-muted/20 text-foreground py-10 md:py-12 border-t-2 border-border">
         <div className="container mx-auto px-4 text-center">
           <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{...slowTransition, delay: 0.1}}
             viewport={{ once: true }}
-            className="space-y-4"
+            className="space-y-3 sm:space-y-4"
           >
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="w-8 h-8 bg-black text-white flex items-center justify-center font-bold">KV</div>
-              <span className="text-lg font-semibold">Karthikeya Vemulapalli</span>
+            <div className="flex items-center justify-center gap-3 mb-3 sm:mb-4">
+              <motion.div
+                className="w-7 h-7 sm:w-8 sm:h-8 bg-primary text-primary-foreground flex items-center justify-center font-bold rounded-md"
+                whileHover={{ rotate: [0, 10, -10, 0], scale: 1.1, transition: {...buttonHoverTapTransition, duration:0.3} }}
+              >
+                KV
+              </div>
+              <span className="text-base sm:text-lg font-medium font-heading">Karthikeya Vemulapalli</span>
             </div>
-            <p className="text-gray-600">
-              © 2024 Sai Karthikeya Vemulapalli. Built with passion and modern web technologies.
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              © {new Date().getFullYear()} Sai Karthikeya Vemulapalli. Built with passion and modern web technologies.
             </p>
-            <div className="flex justify-center gap-6 mt-6">
+            <div className="flex justify-center gap-5 sm:gap-6 mt-4 sm:mt-6">
               {[
-                { icon: <Github className="w-5 h-5" />, url: "https://github.com/karthikeya-v" },
+                { name: "GitHub", icon: <Github className="w-4 h-4 sm:w-5 sm:h-5" />, url: "https://github.com/karthikeya-v" },
                 {
+                  name: "LinkedIn",
                   icon: <Linkedin className="w-5 h-5" />,
                   url: "https://www.linkedin.com/in/sai-karthikeya-vemulapalli-375a44252/",
                 },
-                { icon: <Mail className="w-5 h-5" />, url: "mailto:saikarthikeya.vemulapalli@gmail.com" },
-              ].map((social, index) => (
-                <motion.button
-                  key={index}
-                  onClick={() => window.open(social.url, "_blank")}
-                  whileHover={{ scale: 1.2, y: -2 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="text-gray-600 hover:text-black transition-colors"
+                { name: "Email", icon: <Mail className="w-4 h-4 sm:w-5 sm:h-5" />, url: "mailto:saikarthikeya.vemulapalli@gmail.com" },
+              ].map((social) => (
+                <motion.a
+                  key={social.name}
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`View Karthikeya's ${social.name} profile`}
+                  whileHover={{ scale: 1.15, y: -3, color: "var(--primary-hsl)" , transition: buttonHoverTapTransition }}
+                  whileTap={{ scale: 0.95, transition: buttonHoverTapTransition }}
+                  transition={fastTransition}
+                  className="text-muted-foreground hover:text-primary"
                 >
                   {social.icon}
-                </motion.button>
+                  <span className="sr-only">{social.name}</span> {/* More specific sr-only text */}
+                </motion.a>
               ))}
             </div>
           </motion.div>
         </div>
       </footer>
-    </div>
+    </main>
   )
 }
